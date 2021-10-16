@@ -68,6 +68,14 @@ actix-web-flash-messages = { version = "0.2", features = ["sessions"] }
 
 You can provide a different message store by implementing the [`storage::FlashMessageStore`] trait.
 
+## Examples
+
+You can find examples of application using `actix-web-flash-messages` on GitHub:
+
+- [cookies](https://github.com/LukeMathWalker/actix-web-flash-messages/tree/main/examples/cookies);
+- [cookie-based sessions](https://github.com/LukeMathWalker/actix-web-flash-messages/tree/main/examples/session-cookie);
+- [Redis-based sessions](https://github.com/LukeMathWalker/actix-web-flash-messages/tree/main/examples/session-redis).
+
 ## The Structure of a Flash Message
 
 [`FlashMessage`]s are made of a [`Level`] and a string of content.

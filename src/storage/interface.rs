@@ -14,6 +14,7 @@ use actix_web::HttpRequest;
 /// You can provide your own custom message store backend by implementing this trait.
 ///
 /// [`CookieMessageStore`]: crate::storage::CookieMessageStore
+/// [`SessionMessageStore`]: crate::storage::SessionMessageStore
 pub trait FlashMessageStore: Send + Sync {
     /// Extract flash messages from an incoming request.
     fn load(&self, request: &HttpRequest) -> Result<Vec<FlashMessage>, LoadError>;

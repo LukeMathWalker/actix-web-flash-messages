@@ -15,7 +15,7 @@ use actix_web::HttpRequest;
 /// # Disclaimer
 ///
 /// Be careful: you need to wrap your application in an additional middleware,
-/// in addition to [`FlashMessageFramework`], that provides persistence for the
+/// in addition to [`FlashMessagesFramework`], that provides persistence for the
 /// session data.  
 /// `actix-session` provides a cookie-based implementation of sessions via
 /// [`actix_session::CookieSession`](https://docs.rs/actix-session/0.5.0-beta.2/actix_session/struct.CookieSession.html).  
@@ -24,7 +24,12 @@ use actix_web::HttpRequest;
 ///
 /// Flash messages will not work if you fail to mount a storage backend for your sessions.
 ///
-/// [`FlashMessageFramework`]: crate::FlashMessageFramework
+/// You can find examples of application using [`SessionMessageStore`] on GitHub:
+/// using both
+/// [cookie-based sessions](https://github.com/LukeMathWalker/actix-web-flash-messages/tree/main/examples/session-cookie) and
+/// [Redis-based sessions](https://github.com/LukeMathWalker/actix-web-flash-messages/tree/main/examples/session-redis).
+///
+/// [`FlashMessagesFramework`]: crate::FlashMessagesFramework
 #[derive(Clone)]
 pub struct SessionMessageStore {
     key: String,
