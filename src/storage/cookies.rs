@@ -14,6 +14,9 @@ use time::OffsetDateTime;
 /// [`CookieMessageStore`] uses a signed cookie to store and retrieve [`FlashMessage`]s.  
 ///
 /// Use [`CookieMessageStore::builder`] to build an instance of [`CookieMessageStore`]!
+///
+/// You can find an example of an application using [`CookieMessageStore`]
+/// [on GitHub](https://github.com/LukeMathWalker/actix-web-flash-messages/tree/main/examples/cookies).
 pub struct CookieMessageStore {
     cookie_name: String,
     signing_key: Key,
@@ -140,6 +143,7 @@ impl FlashMessageStore for CookieMessageStore {
     fn store(
         &self,
         messages: &[FlashMessage],
+        _request: HttpRequest,
         response_head: &mut ResponseHead,
     ) -> Result<(), StoreError> {
         if !messages.is_empty() {

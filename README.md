@@ -64,14 +64,43 @@ async fn show(messages: IncomingFlashMessages) -> impl Responder {
 
 ## How to install
 
-Add `actix-web-flash-messages` to your development dependencies:
+Add `actix-web-flash-messages` to your dependencies:
 
 ```toml
 [dependencies]
 # ...
 actix-web = "4.0.0-beta.9"
-actix-web-flash-messages = "0.1"
+actix-web-flash-messages = "0.2"
 ```
+
+By default, `actix-web-flash-messages` does not provide any storage backend to receive and send flash messages.  
+You can enable:
+
+- a cookie-based one, [`storage::CookieMessageStore`], using the `cookies` feature flag. The cookie store uses a signed cookie to store and retrieve messages;
+
+```toml
+[dependencies]
+# ...
+actix-web-flash-messages = { version = "0.2", features = ["cookies"] }
+```
+
+- a session-based one, [`storage::SessionMessageStore`], using the `sessions` feature flag. The session store attaches flash messages to the current session.
+
+```toml
+[dependencies]
+# ...
+actix-web-flash-messages = { version = "0.2", features = ["sessions"] }
+```
+
+You can provide a different message store by implementing the [`storage::FlashMessageStore`] trait.
+
+## Examples
+
+You can find examples of application using `actix-web-flash-messages` on GitHub:  
+
+- [cookies](https://github.com/LukeMathWalker/actix-web-flash-messages/tree/main/examples/cookies);
+- [cookie-based sessions](https://github.com/LukeMathWalker/actix-web-flash-messages/tree/main/examples/session-cookie);
+- [Redis-based sessions](https://github.com/LukeMathWalker/actix-web-flash-messages/tree/main/examples/session-redis).
 
 ## The Structure of a Flash Message
 
