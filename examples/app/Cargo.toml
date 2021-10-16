@@ -8,4 +8,4 @@ publish = false
 
 [dependencies]
 actix-web = { version = "4.0.0-beta.9", default-features = false, features = ["cookies", "secure-cookies"] }
-actix-web-flash-messages = { path = "../.." }
+actix-web-flash-messages = { path = "../..", features = ["cookies"] }
