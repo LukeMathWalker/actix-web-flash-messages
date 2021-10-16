@@ -1,5 +1,4 @@
 use actix_redis::RedisSession;
-use actix_session::CookieSession;
 use actix_web::cookie::{Key, SameSite};
 use actix_web::{http, web, App, HttpResponse, HttpServer, Responder};
 use actix_web_flash_messages::storage::SessionMessageStore;
