@@ -22,7 +22,7 @@ async fn set() -> impl Responder {
 }
 
 #[actix_rt::test]
-async fn test_flash_messages_workflow() {
+async fn test_flash_messages_workflow_with_cookies() {
     let cookie_name = "my-custom-cookie-name".to_string();
     let cookie_store = CookieMessageStore::builder(Key::generate())
         .cookie_name(cookie_name.clone())
