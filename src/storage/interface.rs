@@ -4,8 +4,13 @@ use actix_web::HttpRequest;
 
 /// The interface to retrieve and dispatch flash messages.
 ///
-/// `actix-web-flash-messages` provides a cookie-based implementation of flash messages, [`CookieMessageStore`],
-/// using a signed cookie to store and retrieve messages.  
+/// `actix-web-flash-messages` provides two implementation of flash messages:
+///
+/// - a cookie-based one, [`CookieMessageStore`], using a signed cookie to store and
+/// retrieve messages;
+/// - a session-based one, [`SessionMessageStore`], which attaches flash messages
+/// to the current session.
+///
 /// You can provide your own custom message store backend by implementing this trait.
 ///
 /// [`CookieMessageStore`]: crate::storage::CookieMessageStore

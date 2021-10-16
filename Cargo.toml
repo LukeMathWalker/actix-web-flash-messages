@@ -15,7 +15,6 @@ keywords = ["flash", "messages", "actix-web", "notifications"]
 categories = ["asynchronous"]
 
 [features]
-default = ["cookies"]
 cookies = ["actix-web/secure-cookies", "actix-web/cookies"]
 sessions = ["actix-session/default"]
 
