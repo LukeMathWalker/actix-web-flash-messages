@@ -5,3 +5,4 @@ mod sessions;
 
 pub use cookies::{CookieMessageStore, CookieMessageStoreBuilder};
 pub use interface::{FlashMessageStore, LoadError, StoreError};
+pub use sessions::SessionMessageStore;

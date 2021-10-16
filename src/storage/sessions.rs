@@ -4,8 +4,32 @@ use actix_session::UserSession;
 use actix_web::dev::ResponseHead;
 use actix_web::HttpRequest;
 
+/// A session-based implementation of flash messages.
+///
+/// [`SessionMessageStore`] uses the session machinery provided by `actix-session`
+/// to store and retrieve [`FlashMessage`]s.  
+///
+/// Use either [`SessionMessageStore::default`] or [`SessionMessageStore::default`]
+/// to build an instance of [`SessionMessageStore`]!
+#[derive(Clone)]
 pub struct SessionMessageStore {
     key: String,
+}
+
+impl SessionMessageStore {
+    /// Build a new [`SessionMessageStore`] and specify which key should be used
+    /// to store outgoing flash messages in the session map.
+    pub fn new(key: String) -> Self {
+        Self { key }
+    }
+}
+
+impl Default for SessionMessageStore {
+    fn default() -> Self {
+        Self {
+            key: "_flash".into(),
+        }
+    }
 }
 
 impl FlashMessageStore for SessionMessageStore {
