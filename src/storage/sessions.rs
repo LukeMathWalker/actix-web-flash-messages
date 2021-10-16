@@ -54,12 +54,19 @@ impl FlashMessageStore for SessionMessageStore {
         _response: &mut ResponseHead,
     ) -> Result<(), StoreError> {
         let session = request.get_session();
-        session.insert(&self.key, messages).map_err(|e| {
-            // This sucks - we are losing all context.
-            let e = anyhow::anyhow!("{}", e)
-                .context("Failed to retrieve flash messages from session storage.");
-            StoreError::GenericError(e)
-        })?;
+        if messages.is_empty() {
+            // Make sure to clear up previous flash messages!
+            // No need to do this on the other if-branch because we are overwriting
+            // any pre-existing flash message with a new value.
+            session.remove(&self.key);
+        } else {
+            session.insert(&self.key, messages).map_err(|e| {
+                // This sucks - we are losing all context.
+                let e = anyhow::anyhow!("{}", e)
+                    .context("Failed to retrieve flash messages from session storage.");
+                StoreError::GenericError(e)
+            })?;
+        }
         Ok(())
     }
 }
