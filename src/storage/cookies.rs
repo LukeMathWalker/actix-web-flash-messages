@@ -140,6 +140,7 @@ impl FlashMessageStore for CookieMessageStore {
     fn store(
         &self,
         messages: &[FlashMessage],
+        _request: HttpRequest,
         response_head: &mut ResponseHead,
     ) -> Result<(), StoreError> {
         if !messages.is_empty() {

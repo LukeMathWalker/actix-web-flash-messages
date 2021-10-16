@@ -17,6 +17,7 @@ pub trait FlashMessageStore: Send + Sync {
     fn store(
         &self,
         messages: &[FlashMessage],
+        request: HttpRequest,
         response: &mut ResponseHead,
     ) -> Result<(), StoreError>;
 }

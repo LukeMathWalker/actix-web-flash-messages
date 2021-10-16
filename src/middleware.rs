@@ -88,8 +88,13 @@ where
             response.map(|mut response| {
                 OUTGOING_MAILBOX
                     .with(|m| {
-                        storage_backend
-                            .store(&m.messages.borrow(), response.response_mut().head_mut())
+                        storage_backend.store(
+                            &m.messages.borrow(),
+                            // This `.clone()` is cheap because `HttpRequest` is just an `Rc` pointer
+                            // around the actual request data.
+                            response.request().clone(),
+                            response.response_mut().head_mut(),
+                        )
                     })
                     .unwrap();
                 response
