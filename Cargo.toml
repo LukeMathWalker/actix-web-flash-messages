@@ -1,6 +1,6 @@
 [workspace]
-members = [".", "examples/cookies", "examples/session-cookie"]
-default-members = [".", "examples/cookies", "examples/session-cookie"]
+members = [".", "examples/cookies", "examples/session-cookie", "examples/session-redis"]
+default-members = [".", "examples/cookies", "examples/session-cookie", "examples/session-redis"]
 
 [package]
 name = "actix-web-flash-messages"
