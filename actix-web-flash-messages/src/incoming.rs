@@ -28,7 +28,7 @@ pub struct IncomingFlashMessages {
 
 impl IncomingFlashMessages {
     /// Return an iterator over incoming [`FlashMessage`]s.
-    pub fn iter(&self) -> impl Iterator<Item = &FlashMessage> {
+    pub fn iter(&self) -> impl ExactSizeIterator<Item = &FlashMessage> {
         self.messages.iter()
     }
 }
