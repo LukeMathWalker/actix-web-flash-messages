@@ -76,8 +76,6 @@ impl CookieMessageStore {
             let signed_cookie = Cookie::build(&self.cookie_name, encoded_value)
                 .secure(true)
                 .http_only(true)
-                .same_site(SameSite::Strict)
-                .max_age(time::Duration::minutes(10))
                 .finish();
 
             Ok(signed_cookie)
@@ -159,7 +157,6 @@ impl FlashMessageStore for CookieMessageStore {
             // any pre-existing cookie with a new value.
             let removal_cookie = Cookie::build(self.cookie_name.clone(), "")
                 .max_age(time::Duration::seconds(0))
-                .expires(OffsetDateTime::now_utc() - time::Duration::days(365))
                 .finish();
             response_head
                 .add_cookie(&removal_cookie)
