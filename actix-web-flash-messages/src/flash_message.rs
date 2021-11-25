@@ -97,7 +97,7 @@ impl FlashMessage {
     }
 }
 
-#[derive(serde::Deserialize, serde::Serialize, Clone, Copy)]
+#[derive(serde::Deserialize, serde::Serialize, Clone, Copy, PartialEq, PartialOrd, Eq)]
 /// The severity level of a [`FlashMessage`].
 ///
 /// Levels can be used for filtering and rendering - for example:
