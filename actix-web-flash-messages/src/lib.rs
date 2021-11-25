@@ -1,4 +1,4 @@
-#![doc = include_str!("../crate_readme.md")]
+#![doc = include_str!("../../crate_readme.md")]
 mod builder;
 mod flash_message;
 mod incoming;

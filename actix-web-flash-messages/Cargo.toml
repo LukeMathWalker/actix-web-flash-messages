@@ -1,0 +1,30 @@
+[package]
+name = "actix-web-flash-messages"
+version = "0.2.1"
+edition = "2018"
+authors = ["Luca Palmieri <rust@lpalmieri.com>"]
+license = "MIT/Apache-2.0"
+repository = "https://github.com/LukeMathWalker/actix-web-flash-messages"
+documentation = "https://docs.rs/actix-web-flash-messages/"
+description = "Flash messages for actix-web applications."
+keywords = ["flash", "messages", "actix-web", "notifications"]
+categories = ["asynchronous"]
+
+[features]
+cookies = ["actix-web/secure-cookies", "actix-web/cookies"]
+sessions = ["actix-session/default"]
+
+[dependencies]
+actix-session = { version = "0.5.0-beta.4", optional = true }
+actix-web = { version = "4.0.0-beta.12", default-features = false }
+anyhow = "1.0.44"
+percent-encoding = "2.1.0"
+serde = { version = "1.0.130", features = ["derive"] }
+serde_json = "1.0.68"
+thiserror = "1.0.30"
+time = "0.2"
+tokio = { version = "1.12.0", default-features = false, features = ["rt"] }
+
+[dev-dependencies]
+actix-rt = "2.2.0"
+actix-test = "0.0.1"
