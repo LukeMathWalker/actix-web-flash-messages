@@ -69,7 +69,7 @@ Add `actix-web-flash-messages` to your dependencies:
 ```toml
 [dependencies]
 # ...
-actix-web = "4.0.0-beta.9"
+actix-web = "4.0.0-beta.12"
 actix-web-flash-messages = "0.2"
 ```
 

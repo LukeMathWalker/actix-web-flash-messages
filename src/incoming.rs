@@ -34,7 +34,6 @@ impl IncomingFlashMessages {
 }
 
 impl FromRequest for IncomingFlashMessages {
-    type Config = ();
     type Error = actix_web::Error;
     type Future = std::future::Ready<Result<Self, Self::Error>>;
 
