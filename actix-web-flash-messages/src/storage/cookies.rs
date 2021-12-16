@@ -1,13 +1,13 @@
 use crate::storage::interface::{FlashMessageStore, LoadError, StoreError};
 use crate::FlashMessage;
-use actix_web::cookie::{Cookie, SameSite};
+use actix_web::cookie::Cookie;
 use actix_web::cookie::{CookieJar, Key};
 use actix_web::dev::ResponseHead;
-use actix_web::http::{header, HeaderValue};
+use actix_web::http::header;
+use actix_web::http::header::HeaderValue;
 use actix_web::HttpRequest;
 use anyhow::Context;
 use percent_encoding::{percent_encode, AsciiSet};
-use time::OffsetDateTime;
 
 /// A cookie-based implementation of flash messages.
 ///
@@ -201,11 +201,11 @@ const USERINFO_ENCODE_SET: &AsciiSet = &PATH_ENCODE_SET
 /// The implementations of `add_cookie` and `del_cookie` are copy-pasted from `actix-web`.
 /// These two methods on `ResponseHead` can probably be added upstream.
 trait ResponseHeadExt {
-    fn add_cookie(&mut self, cookie: &Cookie) -> Result<(), actix_web::http::Error>;
+    fn add_cookie(&mut self, cookie: &Cookie) -> Result<(), anyhow::Error>;
 }
 
 impl ResponseHeadExt for ResponseHead {
-    fn add_cookie(&mut self, cookie: &Cookie) -> Result<(), actix_web::http::Error> {
+    fn add_cookie(&mut self, cookie: &Cookie) -> Result<(), anyhow::Error> {
         HeaderValue::from_str(&cookie.to_string())
             .map(|c| {
                 self.headers_mut().append(header::SET_COOKIE, c);

@@ -1,5 +1,6 @@
 use crate::{storage::FlashMessageStore, FlashMessage};
 use actix_web::http::StatusCode;
+use actix_web::HttpMessage;
 use actix_web::{FromRequest, HttpRequest};
 use std::sync::Arc;
 

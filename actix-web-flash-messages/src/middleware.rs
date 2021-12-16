@@ -2,10 +2,11 @@ use std::cell::RefCell;
 use std::future::Future;
 use std::pin::Pin;
 
-use actix_web::dev::{MessageBody, Service, ServiceRequest, ServiceResponse, Transform};
+use actix_web::dev::{Service, ServiceRequest, ServiceResponse, Transform};
 
 use crate::builder::FlashMessagesFramework;
 use crate::{storage::FlashMessageStore, FlashMessage, Level};
+use actix_web::body::MessageBody;
 use actix_web::HttpMessage;
 use std::sync::Arc;
 
