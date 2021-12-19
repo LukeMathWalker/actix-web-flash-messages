@@ -77,6 +77,8 @@ impl CookieMessageStore {
                 .secure(true)
                 .http_only(true)
                 .same_site(SameSite::Lax)
+                // In the future, consider making the `path` configurable - either globally or on a per-endpoint basis
+                .path("/")
                 .finish();
 
             Ok(signed_cookie)
