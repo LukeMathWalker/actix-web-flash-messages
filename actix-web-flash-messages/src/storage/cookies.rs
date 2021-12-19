@@ -1,6 +1,6 @@
 use crate::storage::interface::{FlashMessageStore, LoadError, StoreError};
 use crate::FlashMessage;
-use actix_web::cookie::Cookie;
+use actix_web::cookie::{Cookie, SameSite};
 use actix_web::cookie::{CookieJar, Key};
 use actix_web::dev::ResponseHead;
 use actix_web::http::header;
@@ -76,6 +76,7 @@ impl CookieMessageStore {
             let signed_cookie = Cookie::build(&self.cookie_name, encoded_value)
                 .secure(true)
                 .http_only(true)
+                .same_site(SameSite::Lax)
                 .finish();
 
             Ok(signed_cookie)
