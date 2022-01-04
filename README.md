@@ -69,8 +69,8 @@ Add `actix-web-flash-messages` to your dependencies:
 ```toml
 [dependencies]
 # ...
-actix-web = "4.0.0-beta.15"
-actix-web-flash-messages = "0.2"
+actix-web = "4.0.0-beta.18"
+actix-web-flash-messages = "0.3"
 ```
 
 By default, `actix-web-flash-messages` does not provide any storage backend to receive and send flash messages.  
