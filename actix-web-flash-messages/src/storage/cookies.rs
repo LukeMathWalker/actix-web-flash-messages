@@ -160,6 +160,8 @@ impl FlashMessageStore for CookieMessageStore {
             // any pre-existing cookie with a new value.
             let removal_cookie = Cookie::build(self.cookie_name.clone(), "")
                 .max_age(time::Duration::seconds(0))
+                // In the future, consider making the `path` configurable - either globally or on a per-endpoint basis
+                .path("/")
                 .finish();
             response_head
                 .add_cookie(&removal_cookie)
