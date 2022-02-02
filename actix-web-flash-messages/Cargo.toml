@@ -16,7 +16,7 @@ sessions = ["actix-session/default"]
 
 [dependencies]
 actix-session = { version = "0.5.0-beta.7", optional = true }
-actix-web = { version = "4.0.0-beta.18", default-features = false }
+actix-web = { version = "4.0.0-rc.1", default-features = false }
 anyhow = "1.0.44"
 percent-encoding = "2.1.0"
 serde = { version = "1.0.130", features = ["derive"] }

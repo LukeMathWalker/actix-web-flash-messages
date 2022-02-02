@@ -7,6 +7,6 @@ publish = false
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-actix-web = { version = "4.0.0-beta.12", default-features = false, features = ["cookies", "secure-cookies"] }
+actix-web = { version = "4.0.0-rc.1", default-features = false, features = ["cookies", "secure-cookies", "macros"] }
 actix-web-flash-messages = { path = "../../actix-web-flash-messages", features = ["sessions"] }
 actix-session = { version = "0.5.0-beta.4", default-features = false, features = ["cookie-session"] }
