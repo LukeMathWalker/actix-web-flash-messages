@@ -1,6 +1,6 @@
 use crate::storage::{FlashMessageStore, LoadError, StoreError};
 use crate::FlashMessage;
-use actix_session::UserSession;
+use actix_session::SessionExt;
 use actix_web::dev::ResponseHead;
 use actix_web::HttpRequest;
 

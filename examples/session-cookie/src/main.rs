@@ -1,4 +1,5 @@
-use actix_session::CookieSession;
+use actix_session::SessionMiddleware;
+use actix_session::storage::CookieSessionStore;
 use actix_web::cookie::Key;
 use actix_web::{http, web, App, HttpResponse, HttpServer, Responder};
 use actix_web_flash_messages::storage::SessionMessageStore;
@@ -34,11 +35,12 @@ fn build_message_framework() -> FlashMessagesFramework {
         .build()
 }
 
-fn build_session_storage(key: Key) -> CookieSession {
-    CookieSession::signed(key.signing())
-        .secure(true)
-        .http_only(true)
-        .path("/")
+fn build_session_middleware(key: Key) -> SessionMiddleware<CookieSessionStore> {
+    SessionMiddleware::builder(CookieSessionStore::default(), key)
+        .cookie_secure(true)
+        .cookie_http_only(true)
+        .cookie_path("/".to_string())
+        .build()
 }
 
 #[actix_web::main]
@@ -51,7 +53,7 @@ async fn main() {
             // Order is important here - the session middleware must be mounted
             // AFTER the message framework middleware.
             .wrap(build_message_framework())
-            .wrap(build_session_storage(key.clone()))
+            .wrap(build_session_middleware(key.clone()))
             .route("/show", web::get().to(show))
             .route("/set", web::get().to(set))
     })

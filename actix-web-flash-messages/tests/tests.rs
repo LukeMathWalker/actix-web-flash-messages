@@ -102,28 +102,29 @@ mod cookies {
 #[cfg(feature = "sessions")]
 mod sessions {
     use super::*;
-    use actix_session::CookieSession;
+    use actix_session::{SessionMiddleware, storage::CookieSessionStore};
     use actix_web_flash_messages::storage::SessionMessageStore;
 
     #[actix_rt::test]
     async fn test_flash_messages_workflow_with_session_cookies() {
         let cookie_name = "_session";
         let master_key = Key::generate();
-        let cookie_session = CookieSession::signed(master_key.signing())
-            .name("_session")
-            .http_only(true)
-            .secure(true);
+        let session_middleware = SessionMiddleware::builder(CookieSessionStore::default(), master_key)
+            .cookie_name("_session".to_string())
+            .cookie_http_only(true)
+            .cookie_secure(true)
+            .build();
         let app = actix_web::test::init_service(
             App::new()
                 .wrap(FlashMessagesFramework::builder(SessionMessageStore::default()).build())
-                .wrap(cookie_session)
+                .wrap(session_middleware)
                 .service(resource("/set").route(web::get().to(set)))
                 .service(resource("/show").route(web::get().to(show))),
         )
         .await;
 
         // Step 0:  GET /show
-        // No flash messages have been set - the response should be setting an empty session cookie.
+        // No flash messages have been set - the response should not be setting a session cookie.
         let resp = actix_web::test::call_service(
             &app,
             actix_web::test::TestRequest::get()
@@ -131,12 +132,7 @@ mod sessions {
                 .to_request(),
         )
         .await;
-        let cookies = resp.response().cookies().collect::<Vec<_>>();
-        assert_eq!(cookies.len(), 1);
-        let cookie = cookies.first().unwrap();
-        assert_eq!(cookie.name(), cookie_name);
-        // Ignoring the signature
-        assert_eq!(cookie.value().split_once('=').unwrap().1, "{}");
+        assert_eq!(resp.response().cookies().count(), 0);
 
         let body_length = actix_web::test::read_body(resp).await.len();
         assert_eq!(body_length, 0);
@@ -173,7 +169,7 @@ mod sessions {
         let cookie = cookies.first().unwrap();
         assert_eq!(cookie.name(), cookie_name);
         // Ignoring the signature
-        assert_eq!(cookie.value().split_once('=').unwrap().1, "{}");
+        assert!(!cookie.value().is_empty());
 
         let body_bytes = actix_web::test::read_body(resp).await;
         let body = std::str::from_utf8(&body_bytes).unwrap();
