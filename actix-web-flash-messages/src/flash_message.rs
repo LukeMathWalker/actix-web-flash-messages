@@ -12,6 +12,7 @@ use std::fmt::{Debug, Display, Formatter};
 ///
 /// You can build a flash message via [`FlashMessage::new`] by specifying its content and [`Level`].
 /// You can also use the shorter level-based constructors - e.g. [`FlashMessage::info`].
+#[must_use = "You must call `.send()` on a `FlashMessage` for it to have an effect"]
 pub struct FlashMessage {
     content: String,
     level: Level,
