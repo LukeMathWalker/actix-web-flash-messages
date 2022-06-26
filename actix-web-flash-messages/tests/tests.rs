@@ -102,18 +102,19 @@ mod cookies {
 #[cfg(feature = "sessions")]
 mod sessions {
     use super::*;
-    use actix_session::{SessionMiddleware, storage::CookieSessionStore};
+    use actix_session::{storage::CookieSessionStore, SessionMiddleware};
     use actix_web_flash_messages::storage::SessionMessageStore;
 
     #[actix_rt::test]
     async fn test_flash_messages_workflow_with_session_cookies() {
         let cookie_name = "_session";
         let master_key = Key::generate();
-        let session_middleware = SessionMiddleware::builder(CookieSessionStore::default(), master_key)
-            .cookie_name("_session".to_string())
-            .cookie_http_only(true)
-            .cookie_secure(true)
-            .build();
+        let session_middleware =
+            SessionMiddleware::builder(CookieSessionStore::default(), master_key)
+                .cookie_name("_session".to_string())
+                .cookie_http_only(true)
+                .cookie_secure(true)
+                .build();
         let app = actix_web::test::init_service(
             App::new()
                 .wrap(FlashMessagesFramework::builder(SessionMessageStore::default()).build())
