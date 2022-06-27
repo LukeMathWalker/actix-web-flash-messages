@@ -1,4 +1,5 @@
-use actix_redis::RedisSession;
+use actix_session::storage::RedisActorSessionStore;
+use actix_session::SessionMiddleware;
 use actix_web::cookie::{Key, SameSite};
 use actix_web::{http, web, App, HttpResponse, HttpServer, Responder};
 use actix_web_flash_messages::storage::SessionMessageStore;
@@ -34,11 +35,15 @@ fn build_message_framework() -> FlashMessagesFramework {
         .build()
 }
 
-fn build_session_storage(redis_address: String, key: Key) -> RedisSession {
-    RedisSession::new(&redis_address, key.master())
+fn build_session_storage(
+    redis_address: String,
+    key: Key,
+) -> SessionMiddleware<RedisActorSessionStore> {
+    SessionMiddleware::builder(RedisActorSessionStore::new(&redis_address), key)
         .cookie_http_only(true)
         .cookie_secure(true)
         .cookie_same_site(SameSite::Strict)
+        .build()
 }
 
 #[actix_web::main]
