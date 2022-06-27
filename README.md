@@ -70,7 +70,7 @@ Add `actix-web-flash-messages` to your dependencies:
 [dependencies]
 # ...
 actix-web = "4"
-actix-web-flash-messages = "0.3"
+actix-web-flash-messages = "0.4"
 ```
 
 By default, `actix-web-flash-messages` does not provide any storage backend to receive and send flash messages.  
@@ -81,7 +81,7 @@ You can enable:
 ```toml
 [dependencies]
 # ...
-actix-web-flash-messages = { version = "0.3", features = ["cookies"] }
+actix-web-flash-messages = { version = "0.4", features = ["cookies"] }
 ```
 
 - a session-based one, [`storage::SessionMessageStore`], using the `sessions` feature flag. The session store attaches flash messages to the current session.
@@ -89,7 +89,7 @@ actix-web-flash-messages = { version = "0.3", features = ["cookies"] }
 ```toml
 [dependencies]
 # ...
-actix-web-flash-messages = { version = "0.3", features = ["sessions"] }
+actix-web-flash-messages = { version = "0.4", features = ["sessions"] }
 ```
 
 You can provide a different message store by implementing the [`storage::FlashMessageStore`] trait.
