@@ -21,9 +21,6 @@ pub struct CookieMessageStore {
     cookie_name: String,
     signing_key: Key,
     bytes_size_limit: u32,
-    secure: bool,
-    same_site: SameSite,
-    http_only: bool,
     path: String,
 }
 
@@ -32,9 +29,6 @@ pub struct CookieMessageStoreBuilder {
     cookie_name: Option<String>,
     signing_key: Key,
     bytes_size_limit: Option<u32>,
-    secure: Option<bool>,
-    same_site: Option<SameSite>,
-    http_only: Option<bool>,
     path: Option<String>,
 }
 
@@ -49,9 +43,6 @@ impl CookieMessageStore {
             cookie_name: None,
             signing_key,
             bytes_size_limit: None,
-            secure: None,
-            same_site: None,
-            http_only: None,
             path: None,
         }
     }
@@ -86,9 +77,9 @@ impl CookieMessageStore {
             )))
         } else {
             let signed_cookie = Cookie::build(&self.cookie_name, encoded_value)
-                .secure(self.secure)
-                .http_only(self.http_only)
-                .same_site(self.same_site)
+                .secure(true)
+                .http_only(true)
+                .same_site(SameSite::Lax)
                 .path(&self.path)
                 .finish();
 
@@ -133,24 +124,6 @@ impl CookieMessageStoreBuilder {
         self
     }
 
-    /// By default, secure is set to true.
-    pub fn secure(mut self, secure: bool) -> Self {
-        self.secure = Some(secure);
-        self
-    }
-
-    /// By default, http_only is set to true.
-    pub fn http_only(mut self, http_only: bool) -> Self {
-        self.http_only = Some(http_only);
-        self
-    }
-    
-    /// By default, same_site is set to SameSite::Lax.
-    pub fn same_site(mut self, same_site: SameSite) -> Self {
-        self.same_site = Some(same_site);
-        self
-    }
-
     /// By default, path is set to "/".
     pub fn path(mut self, path: String) -> Self {
         self.path = Some(path);
@@ -163,9 +136,6 @@ impl CookieMessageStoreBuilder {
             cookie_name: self.cookie_name.unwrap_or_else(|| "_flash".to_string()),
             signing_key: self.signing_key,
             bytes_size_limit: self.bytes_size_limit.unwrap_or(2048),
-            secure: self.secure.unwrap_or(true),
-            same_site: self.same_site.unwrap_or(SameSite::Lax),
-            http_only: self.http_only.unwrap_or(true),
             path: self.path.unwrap_or_else(|| "/".to_string()),
         }
     }
