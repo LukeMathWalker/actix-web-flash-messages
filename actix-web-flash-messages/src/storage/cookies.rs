@@ -22,6 +22,7 @@ pub struct CookieMessageStore {
     signing_key: Key,
     bytes_size_limit: u32,
     secure: bool,
+    same_site: SameSite,
 }
 
 /// A fluent builder to construct a [`CookieMessageStore`] instance.
@@ -30,6 +31,7 @@ pub struct CookieMessageStoreBuilder {
     signing_key: Key,
     bytes_size_limit: Option<u32>,
     secure: Option<bool>,
+    same_site: Option<SameSite>,
 }
 
 impl CookieMessageStore {
@@ -44,6 +46,7 @@ impl CookieMessageStore {
             signing_key,
             bytes_size_limit: None,
             secure: None,
+            same_site: None,
         }
     }
 
@@ -79,7 +82,7 @@ impl CookieMessageStore {
             let signed_cookie = Cookie::build(&self.cookie_name, encoded_value)
                 .secure(self.secure)
                 .http_only(true)
-                .same_site(SameSite::Lax)
+                .same_site(self.same_site)
                 // In the future, consider making the `path` configurable - either globally or on a per-endpoint basis
                 .path("/")
                 .finish();
@@ -131,6 +134,13 @@ impl CookieMessageStoreBuilder {
         self
     }
 
+    
+    /// By default, same_site is set to SameSite::Lax.
+    pub fn same_site(mut self, same_site: SameSite) -> Self {
+        self.same_site = Some(same_site);
+        self
+    }
+
     /// Finalise the builder and return a [`CookieMessageStore`] instance.
     pub fn build(self) -> CookieMessageStore {
         CookieMessageStore {
@@ -138,6 +148,7 @@ impl CookieMessageStoreBuilder {
             signing_key: self.signing_key,
             bytes_size_limit: self.bytes_size_limit.unwrap_or(2048),
             secure: self.secure.unwrap_or(true),
+            same_site: self.same_site.unwrap_or(SameSite::Lax)
         }
     }
 }
