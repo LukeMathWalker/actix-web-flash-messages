@@ -22,6 +22,7 @@ pub struct CookieMessageStore {
     signing_key: Key,
     bytes_size_limit: u32,
     path: String,
+    domain: String,
 }
 
 /// A fluent builder to construct a [`CookieMessageStore`] instance.
@@ -30,6 +31,7 @@ pub struct CookieMessageStoreBuilder {
     signing_key: Key,
     bytes_size_limit: Option<u32>,
     path: Option<String>,
+    domain: Option<String>,
 }
 
 impl CookieMessageStore {
@@ -44,6 +46,7 @@ impl CookieMessageStore {
             signing_key,
             bytes_size_limit: None,
             path: None,
+            domain: None,
         }
     }
 
@@ -81,6 +84,7 @@ impl CookieMessageStore {
                 .http_only(true)
                 .same_site(SameSite::Lax)
                 .path(&self.path)
+                .domain(&self.domain)
                 .finish();
 
             Ok(signed_cookie)
@@ -130,6 +134,12 @@ impl CookieMessageStoreBuilder {
         self
     }
 
+    /// By default, domain is set to "".
+    pub fn domain(mut self, domain: String) -> Self {
+        self.domain = Some(domain);
+        self
+    }
+
     /// Finalise the builder and return a [`CookieMessageStore`] instance.
     pub fn build(self) -> CookieMessageStore {
         CookieMessageStore {
@@ -137,6 +147,7 @@ impl CookieMessageStoreBuilder {
             signing_key: self.signing_key,
             bytes_size_limit: self.bytes_size_limit.unwrap_or(2048),
             path: self.path.unwrap_or_else(|| "/".to_string()),
+            domain: self.domain.unwrap_or_else(|| "".to_string()),
         }
     }
 }
