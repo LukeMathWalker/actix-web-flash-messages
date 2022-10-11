@@ -21,6 +21,7 @@ pub struct CookieMessageStore {
     cookie_name: String,
     signing_key: Key,
     bytes_size_limit: u32,
+    secure: bool,
 }
 
 /// A fluent builder to construct a [`CookieMessageStore`] instance.
@@ -28,6 +29,7 @@ pub struct CookieMessageStoreBuilder {
     cookie_name: Option<String>,
     signing_key: Key,
     bytes_size_limit: Option<u32>,
+    secure: Option<bool>,
 }
 
 impl CookieMessageStore {
@@ -41,6 +43,7 @@ impl CookieMessageStore {
             cookie_name: None,
             signing_key,
             bytes_size_limit: None,
+            secure: None,
         }
     }
 
@@ -74,7 +77,7 @@ impl CookieMessageStore {
             )))
         } else {
             let signed_cookie = Cookie::build(&self.cookie_name, encoded_value)
-                .secure(true)
+                .secure(self.secure)
                 .http_only(true)
                 .same_site(SameSite::Lax)
                 // In the future, consider making the `path` configurable - either globally or on a per-endpoint basis
@@ -122,12 +125,19 @@ impl CookieMessageStoreBuilder {
         self
     }
 
+    /// By default, secure is set to true.
+    pub fn secure(mut self, secure: bool) -> Self {
+        self.secure = Some(secure);
+        self
+    }
+
     /// Finalise the builder and return a [`CookieMessageStore`] instance.
     pub fn build(self) -> CookieMessageStore {
         CookieMessageStore {
             cookie_name: self.cookie_name.unwrap_or_else(|| "_flash".to_string()),
             signing_key: self.signing_key,
             bytes_size_limit: self.bytes_size_limit.unwrap_or(2048),
+            secure: self.secure.unwrap_or(true),
         }
     }
 }
