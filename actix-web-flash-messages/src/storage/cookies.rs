@@ -86,8 +86,8 @@ impl CookieMessageStore {
                 .path(&self.path)
                 .finish();
 
-            if self.domain.is_some() {
-                signed_cookie.set_domain(self.domain.as_ref().unwrap())
+            if let Some(domain) = &self.domain {
+                signed_cookie.set_domain(domain);
             }
 
             Ok(signed_cookie)
