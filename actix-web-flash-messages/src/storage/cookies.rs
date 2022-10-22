@@ -131,7 +131,7 @@ impl CookieMessageStoreBuilder {
         self
     }
 
-    /// By default, path is set to "/".
+    /// By default, the [`Path` attribute](https://developer.mozilla.org/en-US/docs/Web/HTTP/Cookies#define_where_cookies_are_sent) is set to "/".
     pub fn path(mut self, path: String) -> Self {
         self.path = Some(path);
         self
