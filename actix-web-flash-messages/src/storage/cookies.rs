@@ -137,7 +137,7 @@ impl CookieMessageStoreBuilder {
         self
     }
 
-    /// By default, domain is set to None.
+    /// By default, the [`Domain` attribute](https://developer.mozilla.org/en-US/docs/Web/HTTP/Cookies#define_where_cookies_are_sent) is set to `None`.
     pub fn domain(mut self, domain: String) -> Self {
         self.domain = Some(domain);
         self
