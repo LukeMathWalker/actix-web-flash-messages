@@ -21,6 +21,8 @@ pub struct CookieMessageStore {
     cookie_name: String,
     signing_key: Key,
     bytes_size_limit: u32,
+    path: String,
+    domain: Option<String>,
 }
 
 /// A fluent builder to construct a [`CookieMessageStore`] instance.
@@ -28,6 +30,8 @@ pub struct CookieMessageStoreBuilder {
     cookie_name: Option<String>,
     signing_key: Key,
     bytes_size_limit: Option<u32>,
+    path: Option<String>,
+    domain: Option<String>,
 }
 
 impl CookieMessageStore {
@@ -41,6 +45,8 @@ impl CookieMessageStore {
             cookie_name: None,
             signing_key,
             bytes_size_limit: None,
+            path: None,
+            domain: None,
         }
     }
 
@@ -73,13 +79,16 @@ impl CookieMessageStore {
                 encoded_value.len()
             )))
         } else {
-            let signed_cookie = Cookie::build(&self.cookie_name, encoded_value)
+            let mut signed_cookie = Cookie::build(&self.cookie_name, encoded_value)
                 .secure(true)
                 .http_only(true)
                 .same_site(SameSite::Lax)
-                // In the future, consider making the `path` configurable - either globally or on a per-endpoint basis
-                .path("/")
+                .path(&self.path)
                 .finish();
+
+            if let Some(domain) = &self.domain {
+                signed_cookie.set_domain(domain);
+            }
 
             Ok(signed_cookie)
         }
@@ -122,12 +131,26 @@ impl CookieMessageStoreBuilder {
         self
     }
 
+    /// By default, the [`Path` attribute](https://developer.mozilla.org/en-US/docs/Web/HTTP/Cookies#define_where_cookies_are_sent) is set to "/".
+    pub fn path(mut self, path: String) -> Self {
+        self.path = Some(path);
+        self
+    }
+
+    /// By default, the [`Domain` attribute](https://developer.mozilla.org/en-US/docs/Web/HTTP/Cookies#define_where_cookies_are_sent) is left unset.
+    pub fn domain(mut self, domain: String) -> Self {
+        self.domain = Some(domain);
+        self
+    }
+
     /// Finalise the builder and return a [`CookieMessageStore`] instance.
     pub fn build(self) -> CookieMessageStore {
         CookieMessageStore {
             cookie_name: self.cookie_name.unwrap_or_else(|| "_flash".to_string()),
             signing_key: self.signing_key,
             bytes_size_limit: self.bytes_size_limit.unwrap_or(2048),
+            path: self.path.unwrap_or_else(|| "/".to_string()),
+            domain: self.domain,
         }
     }
 }
