@@ -21,6 +21,7 @@ pub struct CookieMessageStore {
     cookie_name: String,
     signing_key: Key,
     bytes_size_limit: u32,
+    same_site: SameSite,
     path: String,
     domain: Option<String>,
 }
@@ -30,6 +31,7 @@ pub struct CookieMessageStoreBuilder {
     cookie_name: Option<String>,
     signing_key: Key,
     bytes_size_limit: Option<u32>,
+    same_site: Option<SameSite>,
     path: Option<String>,
     domain: Option<String>,
 }
@@ -45,6 +47,7 @@ impl CookieMessageStore {
             cookie_name: None,
             signing_key,
             bytes_size_limit: None,
+            same_site: None,
             path: None,
             domain: None,
         }
@@ -66,7 +69,7 @@ impl CookieMessageStore {
         let mut cookie_jar = CookieJar::new();
         cookie_jar
             .signed_mut(&self.signing_key)
-            .add(Cookie::new(self.cookie_name.to_owned(), serialised));
+            .add(Cookie::build(self.cookie_name.to_owned(), serialised).same_site(self.same_site).finish());
         let signed_cookie = cookie_jar.get(&self.cookie_name).unwrap();
 
         // Then percent-encode the value and set all relevant cookie properties.
@@ -82,7 +85,7 @@ impl CookieMessageStore {
             let mut signed_cookie = Cookie::build(&self.cookie_name, encoded_value)
                 .secure(true)
                 .http_only(true)
-                .same_site(SameSite::Lax)
+                .same_site(self.same_site)
                 .path(&self.path)
                 .finish();
 
@@ -143,12 +146,19 @@ impl CookieMessageStoreBuilder {
         self
     }
 
+    /// By default, the [`SameSite` attribute](https://developer.mozilla.org/en-US/docs/Web/HTTP/Cookies#controlling_third-party_cookies_with_samesite) is `Lax`.
+    pub fn same_site(mut self, same_site: SameSite) -> Self {
+        self.same_site = Some(same_site);
+        self
+    }
+
     /// Finalise the builder and return a [`CookieMessageStore`] instance.
     pub fn build(self) -> CookieMessageStore {
         CookieMessageStore {
             cookie_name: self.cookie_name.unwrap_or_else(|| "_flash".to_string()),
             signing_key: self.signing_key,
             bytes_size_limit: self.bytes_size_limit.unwrap_or(2048),
+            same_site: self.same_site.unwrap_or(SameSite::Lax),
             path: self.path.unwrap_or_else(|| "/".to_string()),
             domain: self.domain,
         }
@@ -182,6 +192,7 @@ impl FlashMessageStore for CookieMessageStore {
             // No need to do this on the other if-branch because we are overwriting
             // any pre-existing cookie with a new value.
             let removal_cookie = Cookie::build(self.cookie_name.clone(), "")
+                .same_site(self.same_site)
                 .max_age(time::Duration::seconds(0))
                 // In the future, consider making the `path` configurable - either globally or on a per-endpoint basis
                 .path("/")
