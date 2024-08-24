@@ -1,4 +1,4 @@
-use actix_web::cookie::Key;
+use actix_web::cookie::{Key, SameSite};
 use actix_web::web::resource;
 use actix_web::{web, App, HttpResponse, Responder};
 use actix_web_flash_messages::{FlashMessage, FlashMessagesFramework, IncomingFlashMessages};
@@ -56,6 +56,7 @@ mod cookies {
         assert_eq!(cookie.name(), cookie_name);
         assert_eq!(cookie.value(), "");
         assert_eq!(cookie.max_age(), Some(time::Duration::seconds(0)));
+        assert_eq!(cookie.same_site(), Some(SameSite::Lax));
 
         let body_length = actix_web::test::read_body(resp).await.len();
         assert_eq!(body_length, 0);
@@ -91,6 +92,85 @@ mod cookies {
         let cookie = cookies.first().unwrap();
         assert_eq!(cookie.name(), cookie_name);
         assert_eq!(cookie.value(), "");
+        assert_eq!(cookie.max_age(), Some(time::Duration::seconds(0)));
+        assert_eq!(cookie.same_site(), Some(SameSite::Lax));
+
+        let body_bytes = actix_web::test::read_body(resp).await;
+        let body = std::str::from_utf8(&body_bytes).unwrap();
+        assert_eq!(body, "Hey there! - info\n");
+    }
+
+    #[actix_rt::test]
+    async fn test_flash_messages_workflow_with_cookies_samesite_strict() {
+        let cookie_name = "my-custom-cookie-name".to_string();
+        let cookie_store = CookieMessageStore::builder(Key::generate())
+            .cookie_name(cookie_name.clone())
+            .same_site(SameSite::Strict)
+            .build();
+        let messages_framework = FlashMessagesFramework::builder(cookie_store).build();
+        let app = actix_web::test::init_service(
+            App::new()
+                .wrap(messages_framework)
+                .service(resource("/set").route(web::get().to(set)))
+                .service(resource("/show").route(web::get().to(show))),
+        )
+        .await;
+
+        // Step 0:  GET /show
+        // No flash messages have been set - the response should be setting the flash cookie
+        // with max_age set to 0.
+        let resp = actix_web::test::call_service(
+            &app,
+            actix_web::test::TestRequest::get()
+                .uri("/show")
+                .to_request(),
+        )
+        .await;
+        let cookies = resp.response().cookies().collect::<Vec<_>>();
+        assert_eq!(cookies.len(), 1);
+        let cookie = cookies.first().unwrap();
+        assert_eq!(cookie.name(), cookie_name);
+        assert_eq!(cookie.value(), "");
+        assert_eq!(cookie.max_age(), Some(time::Duration::seconds(0)));
+
+        let body_length = actix_web::test::read_body(resp).await.len();
+        assert_eq!(body_length, 0);
+
+        // Step 1:  GET /set
+        // One flash message is passed in the response via cookies - the debug-level message
+        // is ignored.
+        let resp = actix_web::test::call_service(
+            &app,
+            actix_web::test::TestRequest::get().uri("/set").to_request(),
+        )
+        .await;
+        let flash_cookie = resp
+            .response()
+            .cookies()
+            .find(|c| c.name() == cookie_name)
+            .unwrap();
+
+        assert_eq!(flash_cookie.name(), cookie_name);
+        assert_eq!(flash_cookie.same_site(), Some(SameSite::Strict));
+
+        // Step 2:  GET /show
+        // The flash message is correctly read from the cookie and returned as part of the
+        // body.
+        // The response contains a directive to delete the flash cookie (one-time usage).
+        let resp = actix_web::test::call_service(
+            &app,
+            actix_web::test::TestRequest::get()
+                .uri("/show")
+                .cookie(flash_cookie)
+                .to_request(),
+        )
+        .await;
+        let cookies = resp.response().cookies().collect::<Vec<_>>();
+        assert_eq!(cookies.len(), 1);
+        let cookie = cookies.first().unwrap();
+        assert_eq!(cookie.name(), cookie_name);
+        assert_eq!(cookie.value(), "");
+        assert_eq!(cookie.same_site(), Some(SameSite::Strict));
         assert_eq!(cookie.max_age(), Some(time::Duration::seconds(0)));
 
         let body_bytes = actix_web::test::read_body(resp).await;
