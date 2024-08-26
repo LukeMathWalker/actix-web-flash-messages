@@ -1,4 +1,4 @@
-use actix_session::storage::RedisActorSessionStore;
+use actix_session::storage::RedisSessionStore;
 use actix_session::SessionMiddleware;
 use actix_web::cookie::{Key, SameSite};
 use actix_web::{http, web, App, HttpResponse, HttpServer, Responder};
@@ -36,10 +36,10 @@ fn build_message_framework() -> FlashMessagesFramework {
 }
 
 fn build_session_storage(
-    redis_address: String,
+    store: RedisSessionStore,
     key: Key,
-) -> SessionMiddleware<RedisActorSessionStore> {
-    SessionMiddleware::builder(RedisActorSessionStore::new(&redis_address), key)
+) -> SessionMiddleware<RedisSessionStore> {
+    SessionMiddleware::builder(store, key)
         .cookie_http_only(true)
         .cookie_secure(true)
         .cookie_same_site(SameSite::Strict)
@@ -50,6 +50,9 @@ fn build_session_storage(
 async fn main() {
     // This will usually come from configuration!
     let key = Key::generate();
+    let store = RedisSessionStore::new("redis://127.0.0.1:6379")
+        .await
+        .unwrap();
 
     HttpServer::new(move || {
         App::new()
@@ -58,7 +61,7 @@ async fn main() {
             .wrap(build_message_framework())
             // You need a running Redis on port 6379
             // You can use `docker run -d -p 6379:6379 redis`
-            .wrap(build_session_storage("127.0.0.1:6379".into(), key.clone()))
+            .wrap(build_session_storage(store.clone(), key.clone()))
             .route("/show", web::get().to(show))
             .route("/set", web::get().to(set))
     })
