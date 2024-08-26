@@ -67,9 +67,11 @@ impl CookieMessageStore {
 
         // Sign the payload **before** doing percent-encoding
         let mut cookie_jar = CookieJar::new();
-        cookie_jar
-            .signed_mut(&self.signing_key)
-            .add(Cookie::build(self.cookie_name.to_owned(), serialised).same_site(self.same_site).finish());
+        cookie_jar.signed_mut(&self.signing_key).add(
+            Cookie::build(self.cookie_name.to_owned(), serialised)
+                .same_site(self.same_site)
+                .finish(),
+        );
         let signed_cookie = cookie_jar.get(&self.cookie_name).unwrap();
 
         // Then percent-encode the value and set all relevant cookie properties.
