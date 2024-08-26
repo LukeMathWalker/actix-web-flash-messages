@@ -11,6 +11,9 @@ readme = "../README.md"
 keywords = ["flash", "messages", "actix-web", "notifications"]
 categories = ["asynchronous"]
 
+[package.metadata.docs.rs]
+all-features = true
+
 [features]
 cookies = ["actix-web/secure-cookies", "actix-web/cookies"]
 sessions = ["actix-session/default"]
