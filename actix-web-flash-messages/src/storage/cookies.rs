@@ -24,6 +24,7 @@ pub struct CookieMessageStore {
     same_site: SameSite,
     path: String,
     domain: Option<String>,
+    secure_cookies: bool,
 }
 
 /// A fluent builder to construct a [`CookieMessageStore`] instance.
@@ -50,6 +51,7 @@ impl CookieMessageStore {
             same_site: None,
             path: None,
             domain: None,
+            secure_cookies: None,
         }
     }
 
@@ -85,7 +87,7 @@ impl CookieMessageStore {
             )))
         } else {
             let mut signed_cookie = Cookie::build(&self.cookie_name, encoded_value)
-                .secure(true)
+                .secure(self.secure_cookies)
                 .http_only(true)
                 .same_site(self.same_site)
                 .path(&self.path)
@@ -154,6 +156,12 @@ impl CookieMessageStoreBuilder {
         self
     }
 
+    /// By default, the [`Secure` attribute](https://developer.mozilla.org/en-US/docs/Web/HTTP/Guides/Cookies#security) is true.
+    pub fn secure_cookies(mut self, secure_cookies: bool) -> Self {
+        self.secure_cookies = Some(secure_cookies);
+        self
+    }
+
     /// Finalise the builder and return a [`CookieMessageStore`] instance.
     pub fn build(self) -> CookieMessageStore {
         CookieMessageStore {
@@ -163,6 +171,7 @@ impl CookieMessageStoreBuilder {
             same_site: self.same_site.unwrap_or(SameSite::Lax),
             path: self.path.unwrap_or_else(|| "/".to_string()),
             domain: self.domain,
+            secure_cookies: self.secure_cookies.unwrap_or(true),
         }
     }
 }
