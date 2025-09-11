@@ -11,7 +11,7 @@ use percent_encoding::{percent_encode, AsciiSet};
 
 /// A cookie-based implementation of flash messages.
 ///
-/// [`CookieMessageStore`] uses a signed cookie to store and retrieve [`FlashMessage`]s.  
+/// [`CookieMessageStore`] uses a signed cookie to store and retrieve [`FlashMessage`]s.
 ///
 /// Use [`CookieMessageStore::builder`] to build an instance of [`CookieMessageStore`]!
 ///
@@ -35,14 +35,15 @@ pub struct CookieMessageStoreBuilder {
     same_site: Option<SameSite>,
     path: Option<String>,
     domain: Option<String>,
+    secure_cookies: Option<bool>,
 }
 
 impl CookieMessageStore {
     /// A fluent API to configure [`CookieMessageStore`].
     ///
-    /// It takes as input a **signing key**, the only required piece of configuration.  
+    /// It takes as input a **signing key**, the only required piece of configuration.
     /// The cookie used to store flash messages is signed - this ensures that flash messages
-    /// were authored by the application and were not tampered with.  
+    /// were authored by the application and were not tampered with.
     pub fn builder(signing_key: Key) -> CookieMessageStoreBuilder {
         CookieMessageStoreBuilder {
             cookie_name: None,
@@ -118,7 +119,7 @@ impl CookieMessageStore {
 }
 
 impl CookieMessageStoreBuilder {
-    /// By default, the cookie used to store messages is named `_flash`.  
+    /// By default, the cookie used to store messages is named `_flash`.
     /// You can use `cookie_name` to set the name to a custom value.
     pub fn cookie_name(mut self, name: String) -> Self {
         self.cookie_name = Some(name);
@@ -129,7 +130,7 @@ impl CookieMessageStoreBuilder {
     /// 2048 bytes.
     ///
     /// This is to ensure [broad cross-browser compatibility](https://www.quora.com/What-Is-The-Maximum-Size-Of-Cookie-In-A-Web-Browser)
-    /// while leaving enough room for other cookies in the response.  
+    /// while leaving enough room for other cookies in the response.
     ///
     /// Make sure to research the limits of the browsers you are targeting
     /// before raising this limit.
