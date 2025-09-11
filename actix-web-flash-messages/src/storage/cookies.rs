@@ -11,7 +11,7 @@ use percent_encoding::{percent_encode, AsciiSet};
 
 /// A cookie-based implementation of flash messages.
 ///
-/// [`CookieMessageStore`] uses a signed cookie to store and retrieve [`FlashMessage`]s.  
+/// [`CookieMessageStore`] uses a signed cookie to store and retrieve [`FlashMessage`]s.
 ///
 /// Use [`CookieMessageStore::builder`] to build an instance of [`CookieMessageStore`]!
 ///
@@ -24,6 +24,7 @@ pub struct CookieMessageStore {
     same_site: SameSite,
     path: String,
     domain: Option<String>,
+    secure_cookies: bool,
 }
 
 /// A fluent builder to construct a [`CookieMessageStore`] instance.
@@ -34,14 +35,15 @@ pub struct CookieMessageStoreBuilder {
     same_site: Option<SameSite>,
     path: Option<String>,
     domain: Option<String>,
+    secure_cookies: Option<bool>,
 }
 
 impl CookieMessageStore {
     /// A fluent API to configure [`CookieMessageStore`].
     ///
-    /// It takes as input a **signing key**, the only required piece of configuration.  
+    /// It takes as input a **signing key**, the only required piece of configuration.
     /// The cookie used to store flash messages is signed - this ensures that flash messages
-    /// were authored by the application and were not tampered with.  
+    /// were authored by the application and were not tampered with.
     pub fn builder(signing_key: Key) -> CookieMessageStoreBuilder {
         CookieMessageStoreBuilder {
             cookie_name: None,
@@ -50,6 +52,7 @@ impl CookieMessageStore {
             same_site: None,
             path: None,
             domain: None,
+            secure_cookies: None,
         }
     }
 
@@ -85,7 +88,7 @@ impl CookieMessageStore {
             )))
         } else {
             let mut signed_cookie = Cookie::build(&self.cookie_name, encoded_value)
-                .secure(true)
+                .secure(self.secure_cookies)
                 .http_only(true)
                 .same_site(self.same_site)
                 .path(&self.path)
@@ -116,7 +119,7 @@ impl CookieMessageStore {
 }
 
 impl CookieMessageStoreBuilder {
-    /// By default, the cookie used to store messages is named `_flash`.  
+    /// By default, the cookie used to store messages is named `_flash`.
     /// You can use `cookie_name` to set the name to a custom value.
     pub fn cookie_name(mut self, name: String) -> Self {
         self.cookie_name = Some(name);
@@ -127,7 +130,7 @@ impl CookieMessageStoreBuilder {
     /// 2048 bytes.
     ///
     /// This is to ensure [broad cross-browser compatibility](https://www.quora.com/What-Is-The-Maximum-Size-Of-Cookie-In-A-Web-Browser)
-    /// while leaving enough room for other cookies in the response.  
+    /// while leaving enough room for other cookies in the response.
     ///
     /// Make sure to research the limits of the browsers you are targeting
     /// before raising this limit.
@@ -154,6 +157,12 @@ impl CookieMessageStoreBuilder {
         self
     }
 
+    /// By default, the [`Secure` attribute](https://developer.mozilla.org/en-US/docs/Web/HTTP/Guides/Cookies#security) is true.
+    pub fn secure_cookies(mut self, secure_cookies: bool) -> Self {
+        self.secure_cookies = Some(secure_cookies);
+        self
+    }
+
     /// Finalise the builder and return a [`CookieMessageStore`] instance.
     pub fn build(self) -> CookieMessageStore {
         CookieMessageStore {
@@ -163,6 +172,7 @@ impl CookieMessageStoreBuilder {
             same_site: self.same_site.unwrap_or(SameSite::Lax),
             path: self.path.unwrap_or_else(|| "/".to_string()),
             domain: self.domain,
+            secure_cookies: self.secure_cookies.unwrap_or(true),
         }
     }
 }
