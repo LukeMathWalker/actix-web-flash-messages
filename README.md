@@ -1,3 +1,7 @@
+> [!IMPORTANT]
+> **`actix-web-flash-messages` has moved to [LukeMathWalker/officina](https://github.com/LukeMathWalker/officina/tree/main/actix-web-flash-messages).**
+> This repository is archived: development, issues and releases continue there. The `actix-web-flash-messages` crate on crates.io is unaffected.
+
 <h1 align="center">actix-web-flash-messages</h1>
 <div align="center">
  <strong>
